@@ -21,7 +21,7 @@ public class WebAppDirContentParser {
             return webApps;
         }
 
-        for (File webApp : webappsDir.listFiles((dir, name) -> dir.isDirectory())){
+        for (File webApp : webappsDir.listFiles(pathname -> pathname.isDirectory())){
             LOGGER.debug("Examining file: '" + webApp + "', isDir == " + webApp.isDirectory());
             File versionTxtFile = new File(webApp.getPath() + File.separator + VERSION_TXT_FILE_NAME);
             String tagText;
