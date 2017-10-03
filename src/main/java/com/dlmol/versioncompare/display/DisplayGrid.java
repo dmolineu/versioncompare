@@ -6,14 +6,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DisplayGrid {
 //    private Cell
 
-    private Set<String> masterAppList = null;
+    private List<String> masterAppList = null;
 
     public DisplayGrid(Map<String, List<WebApp>> webappDirsContents) {
         int totalRowCount = getTotalRowCount(webappDirsContents);
+        masterAppList = getMasterAppList(webappDirsContents);
+    }
+
+    private static List<String> getMasterAppList(Map<String, List<WebApp>> webappDirsContents) {
+        Set<String> allApps = new HashSet<>();
+        webappDirsContents.values().forEach(appsInWebAppDir ->
+                appsInWebAppDir.forEach(app -> allApps.add(app.getName())));
+        return allApps.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     private int getTotalRowCount(Map<String, List<WebApp>> webappDirsContents) {
