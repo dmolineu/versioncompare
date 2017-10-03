@@ -2,12 +2,14 @@ package com.dlmol.versioncompare.controller;
 
 import com.dlmol.versioncompare.contents.WebAppDirContentParser;
 import com.dlmol.versioncompare.model.WebApp;
+import com.dlmol.versioncompare.model.WebAppsDirectory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.File;
-import java.util.List;
+import java.util.*;
 
 @Component
 @org.springframework.web.bind.annotation.RestController
@@ -15,8 +17,14 @@ public class RestController {
 
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(RestController.class);
 
+    @Autowired
+    WebAppDirContentParser webAppParser;
+
     @Value("#{'${webapp.dir.list}'.split(',')}")
     private List<String> webappDirs;
+
+    @Value("#{'${webapp.dir.name.list}'.split(',')}")
+    private List<String> webappDirNames;
 
     @RequestMapping(value = "/")
     public String root() {
@@ -30,14 +38,23 @@ public class RestController {
 
     @RequestMapping(value = "/compare")
     public String compare() {
-        String out = "<html>";
+        if (webappDirs.size() != webappDirNames.size())
+            return "Config Error! webappDirs and webappDirNames have different lengths!";
 
-        for(String dir : webappDirs) {
-            out += "<br>" + dir + ":<br>";
+        List<WebAppsDirectory> webAppDirsContents = new ArrayList<>(webappDirs.size());
+        for(int i=0; i<webappDirs.size(); i++) {
+            String dir = webappDirs.get(i);
             final File webappDir = new File(dir);
-            List<WebApp> webapps = WebAppDirContentParser.getWebApps(webappDir);
-            for (int i=0; i<webapps.size(); i++)
-                out += "<br><nbsp><nbsp><nbsp><nbsp><nbsp>*" + webapps.get(i).getName() + " (" + webapps.get(i).getVersion() + ")<br>";
+            List<WebApp> webapps = webAppParser.getWebApps(webappDir);
+            webAppDirsContents.add(new WebAppsDirectory(webappDir, webappDirNames.get(i), webapps));
+        }
+
+        String out = "<html>";
+        for (WebAppsDirectory webAppsDir : webAppDirsContents) {
+            out += "<br>" + webAppsDir.getDisplayName() + ":<br>";
+            for (WebApp app : webAppsDir.getWebApps())
+                out += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * " +
+                        app.getName() + " (" + app.getVersion() + ")<br>";
         }
         out += "</htm>";
         return out;

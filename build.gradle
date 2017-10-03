@@ -19,24 +19,14 @@ sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
-
-    maven {
-        url "http://vsvnp1:8888/archiva/repository/internal"
-    }
-    maven {
-        url "http://vsvnp1:8888/archiva/repository/snapshots"
-    }
-    maven {
-        url "http://repo.maven.apache.org/maven2"
-    }
 }
 
-
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-starter-jersey')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('commons-io:commons-io:2.4')
+    compile('commons-io:commons-io:2.4')
+    compile('org.webjars:jquery:2.2.4')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-jersey')
+    compile('org.springframework.boot:spring-boot-starter-web')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
