@@ -11,7 +11,7 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 version = '0.0.1-SNAPSHOT'
@@ -22,11 +22,13 @@ repositories {
 }
 
 dependencies {
-    compile('commons-io:commons-io:2.4')
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile('org.webjars:jquery:2.2.4')
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-jersey')
     compile('org.springframework.boot:spring-boot-starter-web')
+
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')

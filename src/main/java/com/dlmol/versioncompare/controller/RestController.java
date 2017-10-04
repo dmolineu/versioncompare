@@ -1,6 +1,7 @@
 package com.dlmol.versioncompare.controller;
 
 import com.dlmol.versioncompare.contents.WebAppDirContentParser;
+import com.dlmol.versioncompare.display.DisplayGrid;
 import com.dlmol.versioncompare.model.WebApp;
 import com.dlmol.versioncompare.model.WebAppsDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +27,17 @@ public class RestController {
     @Value("#{'${webapp.dir.name.list}'.split(',')}")
     private List<String> webappDirNames;
 
-    @RequestMapping(value = "/")
-    public String root() {
-        return config();
-    }
+//    @RequestMapping(value = "/")
+//    public String root() {
+//        return config();
+//    }
 
-    @RequestMapping()
-    public String config() {
-        return "config:" + webappDirs;
-    }
+//    @RequestMapping()
+//    public String config() {
+//        return "config:" + webappDirs;
+//    }
 
-    @RequestMapping(value = "/compare")
+    @RequestMapping() //value = "/compare")
     public String compare() {
         if (webappDirs.size() != webappDirNames.size())
             return "Config Error! webappDirs and webappDirNames have different lengths!";
@@ -49,13 +50,21 @@ public class RestController {
             webAppDirsContents.add(new WebAppsDirectory(webappDir, webappDirNames.get(i), webapps));
         }
 
+        Map<String, List<WebApp>> data = new HashMap<>();
+
         String out = "<html>";
         for (WebAppsDirectory webAppsDir : webAppDirsContents) {
+            data.put(webAppsDir.getDisplayName(), webAppsDir.getWebApps());
             out += "<br>" + webAppsDir.getDisplayName() + ":<br>";
-            for (WebApp app : webAppsDir.getWebApps())
+            for (WebApp app : webAppsDir.getWebApps()) {
                 out += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * " +
                         app.getName() + " (" + app.getVersion() + ")<br>";
+            }
         }
+
+        DisplayGrid dg = new DisplayGrid(data);
+        out += dg.getGridHtmlTable();
+
         out += "</htm>";
         return out;
     }
