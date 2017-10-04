@@ -62,7 +62,7 @@ public class RestController {
             }
         }
 
-        DisplayGrid dg = new DisplayGrid(data);
+        DisplayGrid dg = new DisplayGrid(data, webappDirNames);
         out += dg.getGridHtmlTable();
 
         out += "</htm>";

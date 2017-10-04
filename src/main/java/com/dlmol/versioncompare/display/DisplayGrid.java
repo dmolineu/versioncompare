@@ -12,17 +12,22 @@ public class DisplayGrid {
 
     private List<String> masterAppList = null;
 
-    public DisplayGrid(Map<String, List<WebApp>> webappDirsContents) {
+    public DisplayGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
         int totalRowCount = getTotalRowCount(webappDirsContents);
         masterAppList = getMasterAppList(webappDirsContents);
         System.out.println("Master App List:");
         masterAppList.forEach(app -> System.out.println("\t" + app));
+        buildGrid(webappDirsContents, webappDirNames);
+    }
+
+    //TODO: Ensure column order matches order specified in app props.
+    private void buildGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
         grid = new Cell[masterAppList.size() + 1][webappDirsContents.size() + 1];
         grid[0][0] = new Cell("#", null);
         List<String> appDirList = webappDirsContents.keySet().stream().collect(Collectors.toList());
         for (int row = 0; row < masterAppList.size() + 1; row++) { //Iterate rows for apps
             for (int column = 0; column < appDirList.size() + 1; column++) { //Iterate columns for webapp dirs
-                final String thisWebAppDir = column == 0 ? "" : appDirList.get(column - 1);
+                final String thisWebAppDir = column == 0 ? "#" : webappDirNames.get(column - 1);
                 if (row == 0) { //Headings row
                     if (column == 0)
                         grid[0][column] = new Cell(null, null);
@@ -60,26 +65,32 @@ public class DisplayGrid {
     public String getGridHtmlTable() {
         printGrid();
         System.out.println("getGridHtmlTable():\n"); //TODO: Setup LOGGER.
-        StringBuilder sb = new StringBuilder("<table border=1 cellpadding=3 style=\"width:80%\">\n");
+        StringBuilder sb = new StringBuilder("\n<table border=1 cellpadding=3\">\n");
         for (int row = 0; row < grid.length; row++) { //iterate row
-            sb.append("<tr>\n");
+            sb.append("\t<tr>\n");
             for (int column = 0; column < grid[row].length; column++) { //iterate column
                 System.out.print(grid[row][column] == null ? "\"\"" : grid[row][column].getDisplayText() + "\t");
                 if (row == 0)
-                    sb.append("<th>" + getDisplayableValue(grid[row][column]) + "</th>\n");
+                    sb.append("\t\t<th>" + getDisplayableValue(grid[row][column]) + "</th>\n");
                 else
-                    sb.append("<td>" + (getDisplayableValue(grid[row][column])) + "</td>\n");
+                    sb.append("\t\t<td><div title=\"" + (getHoverValue(grid[row][column])) + "\">" +
+                            (getDisplayableValue(grid[row][column])) + "</div></td>\n");
             }
             System.out.print("\n");
-            sb.append("</tr>\n");
+            sb.append("\t</tr>\n");
         }
-        sb.append("</table>");
+        sb.append("</table>\n");
         return sb.toString();
     }
 
     private String getDisplayableValue(Cell cell) {
         return cell == null || cell.getDisplayText() == null || "null".equalsIgnoreCase(cell.getDisplayText()) ?
                 "" : cell.getDisplayText();
+    }
+
+    private String getHoverValue(Cell cell) {
+        return cell == null || cell.getAltText() == null || "null".equalsIgnoreCase(cell.getAltText()) ?
+                "" : cell.getAltText();
     }
 
     private void printGrid() {
