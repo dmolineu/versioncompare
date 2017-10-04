@@ -4,6 +4,8 @@ import com.dlmol.versioncompare.contents.WebAppDirContentParser;
 import com.dlmol.versioncompare.display.DisplayGrid;
 import com.dlmol.versioncompare.model.WebApp;
 import com.dlmol.versioncompare.model.WebAppsDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,8 +17,7 @@ import java.util.*;
 @Component
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
-
-    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(RestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestController.class);
 
     @Autowired
     WebAppDirContentParser webAppParser;

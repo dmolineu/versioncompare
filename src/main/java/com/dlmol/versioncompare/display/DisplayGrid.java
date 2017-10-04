@@ -2,25 +2,26 @@ package com.dlmol.versioncompare.display;
 
 import com.dlmol.versioncompare.model.Cell;
 import com.dlmol.versioncompare.model.WebApp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class DisplayGrid {
+    private static final Logger logger = LoggerFactory.getLogger(DisplayGrid.class);
 
     private Cell[][] grid;
-
     private List<String> masterAppList = null;
 
     public DisplayGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
         int totalRowCount = getTotalRowCount(webappDirsContents);
         masterAppList = getMasterAppList(webappDirsContents);
-        System.out.println("Master App List:");
-        masterAppList.forEach(app -> System.out.println("\t" + app));
+        logger.debug("Master App List:");
+        masterAppList.forEach(app -> logger.debug("\t" + app));
         buildGrid(webappDirsContents, webappDirNames);
     }
 
-    //TODO: Ensure column order matches order specified in app props.
     private void buildGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
         grid = new Cell[masterAppList.size() + 1][webappDirsContents.size() + 1];
         grid[0][0] = new Cell("#", null);
@@ -44,7 +45,7 @@ public class DisplayGrid {
                                         .map(WebApp::getName)
                                         .collect(Collectors.toList());
                         if (webAppsInCurrentDir.contains(appForRow)) {
-                            System.out.println(appForRow + " was found on " + thisWebAppDir);
+                            logger.trace(appForRow + " was found on " + thisWebAppDir);
                             List<WebApp> dirWebApps = webappDirsContents.get(thisWebAppDir);
                             String altText = null;
                             for (WebApp app : dirWebApps)
@@ -52,7 +53,7 @@ public class DisplayGrid {
                                     altText = app.getVersion();
                             grid[row][column] = new Cell(appForRow, altText);
                         } else {
-                            System.out.println(appForRow + " was NOT found on " + thisWebAppDir);
+                            logger.debug(appForRow + " was NOT found on " + thisWebAppDir);
                             grid[row][column] = new Cell(null, null);
                         }
                     }
@@ -64,7 +65,7 @@ public class DisplayGrid {
 
     public String getGridHtmlTable() {
         printGrid();
-        System.out.println("getGridHtmlTable():\n"); //TODO: Setup LOGGER.
+        logger.debug("getGridHtmlTable():\n"); //TODO: Setup LOGGER.
         StringBuilder sb = new StringBuilder("\n<table border=1 cellpadding=3\">\n");
         for (int row = 0; row < grid.length; row++) { //iterate row
             sb.append("\t<tr>\n");
@@ -94,17 +95,18 @@ public class DisplayGrid {
     }
 
     private void printGrid() {
-        System.out.println("printGrid():");
+        StringBuilder sb = new StringBuilder();
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[0].length; col++) {
-                System.out.print(grid[row][col] == null ?
+                sb.append(grid[row][col] == null ?
                         "\"\"" :
                         grid[row][col].getDisplayText() +
                                 "\t");
             }
-            System.out.println();
+            sb.append("\n");
         }
-        System.out.println();
+        sb.append("\n");
+        logger.debug("printGrid():\n" + sb.toString());
     }
 
     private static List<String> getMasterAppList(Map<String, List<WebApp>> webappDirsContents) {
@@ -127,10 +129,5 @@ public class DisplayGrid {
         }
 
         return masterAppList.size();
-    }
-
-    //TODO: Replace w/ Lombok @Getter
-    public Cell[][] getGrid() {
-        return grid;
     }
 }

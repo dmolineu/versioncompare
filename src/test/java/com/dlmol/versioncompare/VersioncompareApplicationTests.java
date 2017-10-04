@@ -1,7 +1,10 @@
 package com.dlmol.versioncompare;
 
+import com.dlmol.versioncompare.display.DisplayGrid;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -14,6 +17,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class VersioncompareApplicationTests {
+    private static final Logger logger = LoggerFactory.getLogger(DisplayGrid.class);
 
     @Value("#{'${webapp.dir.list}'.split(',')}")
     private List<String> webappDirs;
@@ -27,9 +31,9 @@ public class VersioncompareApplicationTests {
         assertNotNull(webappDirs);
         assertTrue("Expected webappsDirs size to be 3, found: " + webappDirs.size(),
                 webappDirs.size() == 3);
-        System.out.println("Using webappDirs:");
+        logger.debug("Using webappDirs:");
         for(String dir : webappDirs) {
-            System.out.println("\t" + dir);
+            logger.debug("\t" + dir);
             final File webappDir = new File(dir);
             assertTrue("'" + dir + "' is NOT a directory!", webappDir.isDirectory());
             File[] webapps = webappDir.listFiles();
