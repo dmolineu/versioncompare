@@ -31,7 +31,7 @@ public class DisplayGrid {
                 final String thisWebAppDir = column == 0 ? "#" : webappDirNames.get(column - 1);
                 if (row == 0) { //Headings row
                     if (column == 0)
-                        grid[0][column] = new Cell(null, null);
+                        grid[0][column] = new Cell("#", null);
                     else
                         grid[0][column] = new Cell(thisWebAppDir, null);
                 } else { //Data rows

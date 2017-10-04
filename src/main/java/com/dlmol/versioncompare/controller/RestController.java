@@ -28,16 +28,18 @@ public class RestController {
     @Value("#{'${webapp.dir.name.list}'.split(',')}")
     private List<String> webappDirNames;
 
-//    @RequestMapping(value = "/")
-//    public String root() {
-//        return config();
-//    }
+    @RequestMapping(value = "/")
+    public String root() {
+        return config();
+    }
 
-//    @RequestMapping()
-//    public String config() {
-//        return "config:" + webappDirs;
-//    }
+    @RequestMapping()
+    public String config() {
+        return "config:" + webappDirs;
+    }
 
+    //TODO: Serve jsp
+    //TODO: Color-code output, black all the same, red for outlier
     @RequestMapping() //value = "/compare")
     public String compare() {
         if (webappDirs.size() != webappDirNames.size())
@@ -55,6 +57,6 @@ public class RestController {
         for (WebAppsDirectory webAppsDir : webAppDirsContents)
             data.put(webAppsDir.getDisplayName(), webAppsDir.getWebApps());
         DisplayGrid dg = new DisplayGrid(data, webappDirNames);
-        return  "<html>\n" + dg.getGridHtmlTable() + "\n</htm>";
+        return  "\n<html>\n" + dg.getGridHtmlTable() + "\n</htm>";
     }
 }
