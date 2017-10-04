@@ -51,21 +51,9 @@ public class RestController {
         }
 
         Map<String, List<WebApp>> data = new HashMap<>();
-
-        String out = "<html>";
-        for (WebAppsDirectory webAppsDir : webAppDirsContents) {
+        for (WebAppsDirectory webAppsDir : webAppDirsContents)
             data.put(webAppsDir.getDisplayName(), webAppsDir.getWebApps());
-            out += "<br>" + webAppsDir.getDisplayName() + ":<br>";
-            for (WebApp app : webAppsDir.getWebApps()) {
-                out += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * " +
-                        app.getName() + " (" + app.getVersion() + ")<br>";
-            }
-        }
-
         DisplayGrid dg = new DisplayGrid(data, webappDirNames);
-        out += dg.getGridHtmlTable();
-
-        out += "</htm>";
-        return out;
+        return  "<html>\n" + dg.getGridHtmlTable() + "\n</htm>";
     }
 }

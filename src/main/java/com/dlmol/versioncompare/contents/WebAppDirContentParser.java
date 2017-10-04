@@ -1,13 +1,16 @@
 package com.dlmol.versioncompare.contents;
 
 import com.dlmol.versioncompare.model.WebApp;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
 //import org.apache.commons.io.FileUtils;
 
 @Component
@@ -33,22 +36,24 @@ public class WebAppDirContentParser {
                 pathname.isDirectory() && webappIgnoreList.contains(pathname.getName().toLowerCase()) == false)){
             LOGGER.debug("Examining file: '" + webApp + "', isDir == " + webApp.isDirectory());
             File versionTxtFile = new File(webApp.getPath() + File.separator + VERSION_TXT_FILE_NAME);
-            String tagText;
-            if (versionTxtFile == null || versionTxtFile.isFile() == false)
-                tagText = NO_VERSION_TAG_MSG;
-            else
-                //TODO: FileUtils
-//                try {
-//                    tagText = FileUtils.readFileToString(versionTxtFile);
-                    tagText = "Switch to FileUtils to read file.";
-//                } catch (IOException e) {
-//                    LOGGER.error("Unable to read text from verstion.txt file!", e);
-//                    tagText = VERSION_TXT_READ_FAILURE_MSG;
-//                }
-            webApps.add(new WebApp(webApp.getName(), tagText));
+            webApps.add(new WebApp(webApp.getName(), getBuildTagText(versionTxtFile)));
         }
 
         LOGGER.info("Returning " + webApps.size() + " web apps under directory: " + webappsDir.getAbsolutePath());
         return webApps;
+    }
+
+    private String getBuildTagText(File versionTxtFile) {
+        String tagText;
+        if (versionTxtFile == null || versionTxtFile.isFile() == false)
+            tagText = NO_VERSION_TAG_MSG;
+        else
+              try {
+                  tagText = FileUtils.readFileToString(versionTxtFile, Charset.defaultCharset());
+              } catch (IOException e) {
+                  LOGGER.error("Unable to read text from verstion.txt file!");
+                  tagText = VERSION_TXT_READ_FAILURE_MSG;
+              }
+        return tagText;
     }
 }
