@@ -18,9 +18,11 @@ public class WebAppDirContentParser {
 
     private static final Logger logger = LoggerFactory.getLogger(WebAppDirContentParser.class);
 
-    private static final String VERSION_TXT_FILE_NAME = "version.txt";
     private static final String VERSION_TXT_READ_FAILURE_MSG = "Unable to read version.txt!";
     private static final String NO_VERSION_TAG_MSG = "*** No version.txt file found. ***";
+
+    @Value("${build.tag.file.name}")
+    private String buildTagFileName;
 
     @Value("#{'${webapp.ignore.list}'.split(',')}")
     private List<String> webappIgnoreList;
@@ -35,7 +37,7 @@ public class WebAppDirContentParser {
         for (File webApp : webappsDir.listFiles(pathname ->
                 pathname.isDirectory() && webappIgnoreList.contains(pathname.getName().toLowerCase()) == false)){
             logger.debug("Examining file: '" + webApp + "', isDir == " + webApp.isDirectory());
-            File versionTxtFile = new File(webApp.getPath() + File.separator + VERSION_TXT_FILE_NAME);
+            File versionTxtFile = new File(webApp.getPath() + File.separator + buildTagFileName);
             webApps.add(new WebApp(webApp.getName(), getBuildTagText(versionTxtFile)));
         }
 

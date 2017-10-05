@@ -1,6 +1,5 @@
 package com.dlmol.versioncompare;
 
-import com.dlmol.versioncompare.display.DisplayGrid;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -12,12 +11,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.File;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class VersioncompareApplicationTests {
-    private static final Logger logger = LoggerFactory.getLogger(DisplayGrid.class);
+    private static final Logger logger = LoggerFactory.getLogger(VersioncompareApplicationTests.class);
 
     @Value("#{'${webapp.dir.path.list}'.split(',')}")
     private List<String> webappDirs;

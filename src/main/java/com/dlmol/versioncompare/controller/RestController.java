@@ -4,7 +4,7 @@ import com.dlmol.versioncompare.contents.WebAppDirContentParser;
 import com.dlmol.versioncompare.display.DisplayGrid;
 import com.dlmol.versioncompare.env.EnvUtil;
 import com.dlmol.versioncompare.exception.CompareConfigurationException;
-import com.dlmol.versioncompare.model.CompareConfiguration;
+import com.dlmol.versioncompare.env.CompareConfiguration;
 import com.dlmol.versioncompare.model.WebApp;
 import com.dlmol.versioncompare.model.WebAppsDirectory;
 import org.slf4j.Logger;
