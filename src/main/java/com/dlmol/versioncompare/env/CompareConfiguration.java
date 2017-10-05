@@ -41,12 +41,12 @@ public class CompareConfiguration {
         }
         if (webappDirs == null)
             throw new CompareConfigurationException("Property \"" + desiredPathsKey + "\" NOT found!");
-        //TODO: Handle dirs without a name in parens, use lowest dir name as default.
         webappDirNames = webappDirs.stream() //Get name in parenthesis for each dir
-                .map(dir -> dir.substring(dir.indexOf("(") + 1, dir.indexOf(")")))
+                .map(dir -> dir.contains("(") ? dir.substring(dir.indexOf("(") + 1, dir.indexOf(")")) :
+                    dir.substring(Math.max(dir.lastIndexOf("/"), dir.lastIndexOf("\\")) + 1, dir.length())) //Default to path after the last '/' or '\'.
                 .collect(Collectors.toList());
-        webappDirs = webappDirs.stream() //Remove "({user specified name})" from dirs.
-                .map(dir -> dir.substring(0, dir.indexOf("(")))
+        webappDirs = webappDirs.stream() //Remove "({user specified name})" from each dir path.
+                .map(dir -> dir.contains("(") ? dir.substring(0, dir.indexOf("(")) : dir)
                 .collect(Collectors.toList());
         if (webappDirs.size() != webappDirNames.size())
             throw new CompareConfigurationException("'webappDirs' has size '" +
