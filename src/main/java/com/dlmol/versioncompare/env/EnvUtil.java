@@ -26,14 +26,5 @@ public class EnvUtil {
             }
         }
         return map;
-        /*
-        List<String> propKeys = new ArrayList<>(map.entrySet().size());
-        //loop a Map
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            logger.debug("Key : " + entry.getKey() + " Value : " + String.valueOf(entry.getValue()));
-            propKeys.add(entry.getKey());
-        }
-        return propKeys;
-        */
     }
 }
