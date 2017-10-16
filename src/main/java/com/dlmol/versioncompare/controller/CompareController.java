@@ -52,15 +52,16 @@ public class CompareController {
         try {
             config = new CompareConfiguration(propKey, env.getAllProperties());
         } catch (CompareConfigurationException e) {
-            final String msg = "Unable to retrieve properties for \"" + propKey + "\". " + e.getMessage();
+            final String msg = "Unable to retrieve properties for \"" + propKey + "\". Known property keys are: \n" +
+                    getKeyLinks(config.getAvailableCompareSets(env.getAllProperties())) + e.getMessage();
             logger.error(msg, e);
             return msg;
         }
         final String keySetJoined =
                 "\"" + String.join("\", \"", config.getAvailableCompareSets(env.getAllProperties())) + "\"";
         if (propKey == null || propKey.length() == 0) {
-            final String msg = "'propKey' parameter is missing! Configured keys are: \"" +
-                    keySetJoined;
+            final String msg = "'propKey' parameter is missing! Configured keys are: \n" +
+                    getKeyLinks(config.getAvailableCompareSets(env.getAllProperties()));
             logger.error(msg);
             return msg;
         }

@@ -54,7 +54,7 @@ public class CompareConfiguration {
 
     public List<String> getAvailableCompareSets(final Map<String, Object> envProps) {
         if (availableCompareSets == null) {
-            availableCompareSets = envProps.keySet().parallelStream()
+            availableCompareSets = envProps.keySet().stream()
                     .filter(p -> p.contains(PATH_DIR_LIST_PROP_KEY_PREFIX))
                     .map(p -> p.substring(PATH_DIR_LIST_PROP_KEY_PREFIX.length() + 1, p.length()))
                     .sorted()
