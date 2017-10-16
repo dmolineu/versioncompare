@@ -33,6 +33,7 @@ public class Cell {
 
     public void setConsistentVersion(boolean consistentVersion) {
         isConsistentVersion = consistentVersion;
+        isAnomoly = !consistentVersion;
     }
 
     public boolean isAnomoly() {
@@ -41,5 +42,6 @@ public class Cell {
 
     public void setAnomoly(boolean anomoly) {
         isAnomoly = anomoly;
+        isConsistentVersion = !anomoly;
     }
 }

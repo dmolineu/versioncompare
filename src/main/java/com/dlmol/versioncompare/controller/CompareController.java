@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@ResponseBody
 public class CompareController {
     private static final Logger logger = LoggerFactory.getLogger(CompareController.class);
 
@@ -47,17 +47,19 @@ public class CompareController {
     //TODO: Serve jsp
     //TODO: Color-code output, black all the same, red for outlier
     @RequestMapping(value="/compare/{propKey}", method = RequestMethod.GET)
+    @ResponseBody
     public String compare(@PathVariable String propKey) {
         CompareConfiguration config = null;
+        String keySetJoined = null;
         try {
             config = new CompareConfiguration(propKey, env.getAllProperties());
         } catch (CompareConfigurationException e) {
-            final String msg = "Unable to retrieve properties for \"" + propKey + "\". " + e.getMessage();
+            keySetJoined = "\"" + String.join("\", \"", config.getAvailableCompareSets(env.getAllProperties())) + "\"";
+            final String msg = "Unable to retrieve properties for \"" + propKey + "\". " + e.getMessage() +
+                    " Known comparison sets are: " + keySetJoined;
             logger.error(msg, e);
             return msg;
         }
-        final String keySetJoined =
-                "\"" + String.join("\", \"", config.getAvailableCompareSets(env.getAllProperties())) + "\"";
         if (propKey == null || propKey.length() == 0) {
             final String msg = "'propKey' parameter is missing! Configured keys are: \"" +
                     keySetJoined;
@@ -80,5 +82,11 @@ public class CompareController {
         return  "<html>\n" +
                 "<h1>\"" + propKey + "\" Comparison</h1>\n" +
                 dg.getGridHtmlTable() + "\n<div>All Available Compare Keys: " + keySetJoined + "<div>\n</html>";
+    }
+
+    @RequestMapping("/jsp")
+    public String jsp(Model model) {
+        model.addAttribute("russian", "Добрый день");
+        return "compare";
     }
 }

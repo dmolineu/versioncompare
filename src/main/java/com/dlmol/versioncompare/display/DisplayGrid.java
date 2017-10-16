@@ -2,6 +2,8 @@ package com.dlmol.versioncompare.display;
 
 import com.dlmol.versioncompare.model.Cell;
 import com.dlmol.versioncompare.model.WebApp;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 public class DisplayGrid {
     private static final Logger logger = LoggerFactory.getLogger(DisplayGrid.class);
 
+    @Getter(AccessLevel.PUBLIC)
     private Cell[][] grid;
     private List<String> masterAppList = null;
 
@@ -59,6 +62,31 @@ public class DisplayGrid {
                     }
                 }
             }
+            if (row > 0) {
+                logger.debug("comparing row: " + row);
+                //Compare cells in row
+                for (int col = 1; col < appDirList.size(); col++) {
+                    if (grid[col][row] == null || grid[col][row].getAltText() == null)
+                        continue;
+                    for (int compareCol = 1; compareCol < appDirList.size(); compareCol++) {
+                        Cell thisCell = grid[row][col];
+                        final String thisCellVersion = thisCell.getAltText();
+                        if (col == compareCol)
+                            continue;
+                        else {
+                            final Cell compareCell = grid[row][compareCol];
+                            final String compareCellVersion = compareCell == null ? null : compareCell.getAltText();
+                            if (compareCell == null)
+                                thisCell.setAnomoly(true);
+                            else if (thisCellVersion.compareTo(compareCellVersion) == 0)
+                                thisCell.setConsistentVersion(true);
+                            else
+                                thisCell.setAnomoly(true);
+                        }
+                    }
+
+                }
+            }
         }
         printGrid();
     }
@@ -73,9 +101,16 @@ public class DisplayGrid {
                 System.out.print(grid[row][column] == null ? "\"\"" : grid[row][column].getDisplayText() + "\t");
                 if (row == 0)
                     sb.append("\t\t<th>" + getDisplayableValue(grid[row][column]) + "</th>\n");
-                else
-                    sb.append("\t\t<td><div title=\"" + (getHoverValue(grid[row][column])) + "\">" +
-                            (getDisplayableValue(grid[row][column])) + "</div></td>\n");
+                else {
+                    if (grid[row][column].isAnomoly())
+                        sb.append("\t\t<td><div style=\"color:red;\" title=\"");
+                    else if (grid[row][column].isConsistentVersion())
+                        sb.append("\t\t<td><div style=\"color:green;\" title=\"");
+                    else
+                        sb.append("\t\t<td><div title=\"");
+                    sb.append(getHoverValue(grid[row][column])).append("\">")
+                            .append(getDisplayableValue(grid[row][column])).append("</div></td>\n");
+                }
             }
             System.out.print("\n");
             sb.append("\t</tr>\n");
