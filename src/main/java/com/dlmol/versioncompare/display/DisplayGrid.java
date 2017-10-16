@@ -25,6 +25,13 @@ public class DisplayGrid {
         buildGrid(webappDirsContents, webappDirNames);
     }
 
+    private static List<String> getMasterAppList(Map<String, List<WebApp>> webappDirsContents) {
+        Set<String> allApps = new HashSet<>();
+        webappDirsContents.values().forEach(appsInWebAppDir ->
+                appsInWebAppDir.forEach(app -> allApps.add(app.getName())));
+        return allApps.stream().distinct().sorted().collect(Collectors.toList());
+    }
+
     private void buildGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
         grid = new Cell[masterAppList.size() + 1][webappDirsContents.size() + 1];
         grid[0][0] = new Cell("#", null);
@@ -62,38 +69,49 @@ public class DisplayGrid {
                     }
                 }
             }
+            //Set comparison attributes for formatting:
             if (row > 0) {
                 logger.debug("comparing row: " + row);
                 //Compare cells in row
-                for (int col = 1; col < appDirList.size(); col++) {
-                    if (grid[col][row] == null || grid[col][row].getAltText() == null)
-                        continue;
-                    for (int compareCol = 1; compareCol < appDirList.size(); compareCol++) {
-                        Cell thisCell = grid[row][col];
-                        final String thisCellVersion = thisCell.getAltText();
-                        if (col == compareCol)
-                            continue;
-                        else {
-                            final Cell compareCell = grid[row][compareCol];
-                            final String compareCellVersion = compareCell == null ? null : compareCell.getAltText();
-                            if (compareCell == null)
-                                thisCell.setAnomoly(true);
-                            else if (thisCellVersion.compareTo(compareCellVersion) == 0)
-                                thisCell.setConsistentVersion(true);
-                            else
-                                thisCell.setAnomoly(true);
-                        }
+                List<Cell> rowCells = new ArrayList<>(grid[row].length - 1);
+                for (int col=1; col<grid[row].length; col++) //Skip row # count column (0)
+                    rowCells.add(grid[row][col]);
+                if (rowCells.stream().map(c -> c.getAltText()).distinct().count() == 1) //All cells have the same AltText
+                    for (int col = 1; col < grid[row].length; col++) {
+                        grid[row][col].setAnomoly(false);
+                        grid[row][col].setConsistentVersion(true);
                     }
-
-                }
+                else
+                    for (int col = 1; col < grid[row].length; col++) {
+                        grid[row][col].setConsistentVersion(false);
+                        final Cell cell = grid[row][col];
+                        if (cell == null || cell.getAltText() == null)
+                            continue;
+                        grid[row][col].setAnomoly(isAnomoly(appDirList.size(), rowCells, cell));
+                    }
             }
         }
         printGrid();
     }
 
+    /**
+     * @param comparisonListSize
+     * @param rowCells
+     * @param cell
+     * @return True when the cell's version/alt text value appears in more than half of the cells compared.
+     */
+    private boolean isAnomoly(final int comparisonListSize, final List<Cell> rowCells, final Cell cell) {
+        final long countOfRowCellsWithSameAltText = rowCells.stream()
+                .filter(c -> cell.getAltText().equals(c.getAltText())) //Get list where
+                .count();
+        final int thresholdForAnomoly = comparisonListSize / 2;
+        final boolean isAnomoly = thresholdForAnomoly <= countOfRowCellsWithSameAltText;
+        return isAnomoly;
+    }
+
     public String getGridHtmlTable() {
         printGrid();
-        logger.debug("getGridHtmlTable():\n"); //TODO: Setup LOGGER.
+        logger.debug("getGridHtmlTable():\n");
         StringBuilder sb = new StringBuilder("\n<table border=1 cellpadding=3\">\n");
         for (int row = 0; row < grid.length; row++) { //iterate row
             sb.append("\t<tr>\n");
@@ -142,13 +160,6 @@ public class DisplayGrid {
         }
         sb.append("\n");
         logger.debug("printGrid():\n" + sb.toString());
-    }
-
-    private static List<String> getMasterAppList(Map<String, List<WebApp>> webappDirsContents) {
-        Set<String> allApps = new HashSet<>();
-        webappDirsContents.values().forEach(appsInWebAppDir ->
-                appsInWebAppDir.forEach(app -> allApps.add(app.getName())));
-        return allApps.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     private int getTotalRowCount(Map<String, List<WebApp>> webappDirsContents) {

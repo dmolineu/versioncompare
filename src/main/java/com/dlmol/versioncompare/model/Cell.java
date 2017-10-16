@@ -1,5 +1,8 @@
 package com.dlmol.versioncompare.model;
 
+import lombok.ToString;
+
+@ToString
 public class Cell {
     String displayText;
     String altText;
