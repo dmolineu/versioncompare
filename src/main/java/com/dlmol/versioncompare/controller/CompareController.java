@@ -79,6 +79,18 @@ public class CompareController {
         DisplayGrid dg = new DisplayGrid(data, config.getWebappDirNames());
         return  "<html>\n" +
                 "<h1>\"" + propKey + "\" Comparison</h1>\n" +
-                dg.getGridHtmlTable() + "\n<div>All Available Compare Keys: " + keySetJoined + "<div>\n</html>";
+                dg.getGridHtmlTable() + "\n<div><h3>All Available Compare Keys:</h3>" +
+                getKeyLinks(config.getAvailableCompareSets(env.getAllProperties())) + "</div>\n</html>";
+    }
+
+    private String getKeyLinks(List<String> availableCompareSets) {
+        if (availableCompareSets == null || availableCompareSets.size() == 0)
+            return "";
+        StringBuffer list = new StringBuffer("<ul>\n");
+        for (String set : availableCompareSets){
+            list = list.append("\t<li><a href=\"").append(set).append("\">").append(set).append("</a></li>\n");
+        }
+        list.append("</ul>\n");
+        return list.toString();
     }
 }
