@@ -64,7 +64,7 @@ public class DisplayGridTest {
     public void testGrid() throws Exception {
         assertEquals(3, dirNames.size());
         assertEquals(3, contents.size());
-        DisplayGrid displayGrid = new DisplayGrid(contents, dirNames);
+        DisplayGrid displayGrid = new DisplayGrid(contents, dirNames, dirNames);
         Cell[][] grid = displayGrid.getGrid();
         int row = 0;
         int col = 0;
@@ -85,7 +85,7 @@ public class DisplayGridTest {
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getDisplayText() == " + grid[row][col].getDisplayText(),
                 TEST_DIR, grid[row][col].getDisplayText());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getAltText() == " + grid[row][col].getAltText(),
-                null, grid[row][col].getAltText());
+                TEST_DIR, grid[row][col].getAltText());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isAnomoly() == " + grid[row][col].isAnomoly(),
                 false, grid[row][col].isAnomoly());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),
@@ -96,7 +96,7 @@ public class DisplayGridTest {
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getDisplayText() == " + grid[row][col].getDisplayText(),
                 MODL_DIR, grid[row][col].getDisplayText());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getAltText() == " + grid[row][col].getAltText(),
-                null, grid[row][col].getAltText());
+                MODL_DIR, grid[row][col].getAltText());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isAnomoly() == " + grid[row][col].isAnomoly(),
                 false, grid[row][col].isAnomoly());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),
@@ -107,7 +107,7 @@ public class DisplayGridTest {
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getDisplayText() == " + grid[row][col].getDisplayText(),
                 PROD_DIR, grid[row][col].getDisplayText());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getAltText() == " + grid[row][col].getAltText(),
-                null, grid[row][col].getAltText());
+                PROD_DIR, grid[row][col].getAltText());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isAnomoly() == " + grid[row][col].isAnomoly(),
                 false, grid[row][col].isAnomoly());
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),

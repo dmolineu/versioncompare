@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,7 +77,7 @@ public class CompareController {
         Map<String, List<WebApp>> data = new HashMap<>();
         for (WebAppsDirectory webAppsDir : webAppDirsContents)
             data.put(webAppsDir.getDisplayName(), webAppsDir.getWebApps());
-        DisplayGrid dg = new DisplayGrid(data, config.getWebappDirNames());
+        DisplayGrid dg = new DisplayGrid(data, config.getWebappDirNames(), config.getWebappDirs());
         return  "<html>\n" +
                 "<h1>\"" + propKey + "\" Comparison</h1>\n" +
                 dg.getGridHtmlTable() + "\n<div><h3>All Available Compare Keys:</h3>" +

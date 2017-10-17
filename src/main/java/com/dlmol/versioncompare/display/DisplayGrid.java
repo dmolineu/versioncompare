@@ -4,8 +4,10 @@ import com.dlmol.versioncompare.model.Cell;
 import com.dlmol.versioncompare.model.WebApp;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.tags.HtmlEscapeTag;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,14 +17,15 @@ public class DisplayGrid {
 
     @Getter(AccessLevel.PUBLIC)
     private Cell[][] grid;
+
     private List<String> masterAppList = null;
 
-    public DisplayGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
-        int totalRowCount = getTotalRowCount(webappDirsContents);
+    public DisplayGrid(Map<String, List<WebApp>> webappDirsContents,
+                       List<String> webappDirNames, List<String> webappDirPaths) {
         masterAppList = getMasterAppList(webappDirsContents);
         logger.debug("Master App List:");
         masterAppList.forEach(app -> logger.debug("\t" + app));
-        buildGrid(webappDirsContents, webappDirNames);
+        buildGrid(webappDirsContents, webappDirNames, webappDirPaths);
     }
 
     private static List<String> getMasterAppList(Map<String, List<WebApp>> webappDirsContents) {
@@ -32,7 +35,8 @@ public class DisplayGrid {
         return allApps.stream().distinct().sorted().collect(Collectors.toList());
     }
 
-    private void buildGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
+    private void buildGrid(Map<String, List<WebApp>> webappDirsContents,
+                           List<String> webappDirNames, List<String> webappDirPaths) {
         grid = new Cell[masterAppList.size() + 1][webappDirsContents.size() + 1];
         grid[0][0] = new Cell("#", null);
         List<String> appDirList = webappDirsContents.keySet().stream().collect(Collectors.toList());
@@ -43,7 +47,7 @@ public class DisplayGrid {
                     if (column == 0)
                         grid[0][column] = new Cell("#", null);
                     else
-                        grid[0][column] = new Cell(thisWebAppDir, null);
+                        grid[0][column] = new Cell(thisWebAppDir, webappDirPaths.get(column - 1));
                 } else { //Data rows
                     if (column == 0) // Count column
                         grid[row][0] = new Cell(String.valueOf(row), null);
@@ -117,9 +121,10 @@ public class DisplayGrid {
             sb.append("\t<tr>\n");
             for (int column = 0; column < grid[row].length; column++) { //iterate column
                 System.out.print(grid[row][column] == null ? "\"\"" : grid[row][column].getDisplayText() + "\t");
-                if (row == 0)
-                    sb.append("\t\t<th>" + getDisplayableValue(grid[row][column]) + "</th>\n");
-                else {
+                if (row == 0) {
+                    sb.append("\t\t<th><div title=\"").append(getHoverValue(grid[row][column])).append("\">")
+                            .append(getDisplayableValue(grid[row][column])).append("</div></th>\n");
+                } else {
                     if (grid[row][column].isAnomoly())
                         sb.append("\t\t<td><div style=\"color:red;\" title=\"");
                     else if (grid[row][column].isConsistentVersion())
@@ -143,8 +148,10 @@ public class DisplayGrid {
     }
 
     private String getHoverValue(Cell cell) {
-        return cell == null || cell.getAltText() == null || "null".equalsIgnoreCase(cell.getAltText()) ?
+        String str = cell == null || cell.getAltText() == null || "null".equalsIgnoreCase(cell.getAltText()) ?
                 "" : cell.getAltText();
+        str = StringEscapeUtils.escapeHtml4(str);
+        return str;
     }
 
     private void printGrid() {
@@ -160,20 +167,5 @@ public class DisplayGrid {
         }
         sb.append("\n");
         logger.debug("printGrid():\n" + sb.toString());
-    }
-
-    private int getTotalRowCount(Map<String, List<WebApp>> webappDirsContents) {
-        if (masterAppList == null) {
-            masterAppList = new ArrayList<>(30);
-        } else {
-            return masterAppList.size();
-        }
-        if (webappDirsContents == null)
-            return 0;
-        for (List<WebApp> webApps : webappDirsContents.values()) {
-            webApps.forEach(it -> masterAppList.add(it.getName()));
-        }
-
-        return masterAppList.size();
     }
 }
