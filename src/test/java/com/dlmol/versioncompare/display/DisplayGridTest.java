@@ -30,14 +30,17 @@ public class DisplayGridTest {
         List<WebApp> testDirApps = new ArrayList<>();
         testDirApps.add(new WebApp("a", "a: build 1"));
         testDirApps.add(new WebApp("b", "b: build 2"));
+        testDirApps.add(new WebApp("c", "c: build 1"));
 
         List<WebApp> modlDirApps = new ArrayList<>();
         modlDirApps.add(new WebApp("a", "a: build 1"));
         modlDirApps.add(new WebApp("b", "b: build 2"));
+        modlDirApps.add(new WebApp("c", "c: build 2"));
 
         List<WebApp> prodDirApps = new ArrayList<>();
         prodDirApps.add(new WebApp("a", "a: build 1"));
         prodDirApps.add(new WebApp("b", "b: build 1"));
+        prodDirApps.add(new WebApp("c", "c: build 3"));
 
         contents = new HashMap<>(3);
 
@@ -202,13 +205,54 @@ public class DisplayGridTest {
         assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),
                 false, grid[row][col].isConsistentVersion());
 
+        //row 3 - 'c: build 1,2,3'
+        row++;
+        col = 0;
+        printLog(row, col, grid[row][col].toString());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getDisplayText() == " + grid[row][col].getDisplayText(),
+                "3", grid[row][col].getDisplayText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getAltText() == " + grid[row][col].getAltText(),
+                null, grid[row][col].getAltText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isAnomoly() == " + grid[row][col].isAnomoly(),
+                false, grid[row][col].isAnomoly());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),
+                false, grid[row][col].isConsistentVersion());
+
+        col++;
+        printLog(row, col, grid[row][col].toString());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getDisplayText() == " + grid[row][col].getDisplayText(),
+                "c", grid[row][col].getDisplayText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getAltText() == " + grid[row][col].getAltText(),
+                "c: build 1", grid[row][col].getAltText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isAnomoly() == " + grid[row][col].isAnomoly(),
+                true, grid[row][col].isAnomoly());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),
+                false, grid[row][col].isConsistentVersion());
+
+        col++;
+        printLog(row, col, grid[row][col].toString());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getDisplayText() == " + grid[row][col].getDisplayText(),
+                "c", grid[row][col].getDisplayText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getAltText() == " + grid[row][col].getAltText(),
+                "c: build 2", grid[row][col].getAltText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isAnomoly() == " + grid[row][col].isAnomoly(),
+                true, grid[row][col].isAnomoly());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),
+                false, grid[row][col].isConsistentVersion());
+
+        col++;
+        printLog(row, col, grid[row][col].toString());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getDisplayText() == " + grid[row][col].getDisplayText(),
+                "c", grid[row][col].getDisplayText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].getAltText() == " + grid[row][col].getAltText(),
+                "c: build 3", grid[row][col].getAltText());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isAnomoly() == " + grid[row][col].isAnomoly(),
+                true, grid[row][col].isAnomoly());
+        assertEquals("row: " + row + ", col: " + col + ", grid[row][col].isConsistentVersion() == " + grid[row][col].isConsistentVersion(),
+                false, grid[row][col].isConsistentVersion());
     }
 
     private void printLog(int row, int col, String cellToString) {
         System.out.println("Testing row: " + row + ", col: " + col + ": " + cellToString);
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 }

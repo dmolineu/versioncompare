@@ -105,7 +105,7 @@ public class DisplayGrid {
                 .filter(c -> cell.getAltText().equals(c.getAltText())) //Get list where
                 .count();
         final int thresholdForAnomoly = comparisonListSize / 2;
-        final boolean isAnomoly = thresholdForAnomoly <= countOfRowCellsWithSameAltText;
+        final boolean isAnomoly = thresholdForAnomoly >= countOfRowCellsWithSameAltText;
         return isAnomoly;
     }
 
