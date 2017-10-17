@@ -150,7 +150,6 @@ public class DisplayGrid {
     private String getHoverValue(Cell cell) {
         String str = cell == null || cell.getAltText() == null || "null".equalsIgnoreCase(cell.getAltText()) ?
                 "" : cell.getAltText();
-        str = StringEscapeUtils.escapeHtml4(str);
         return str;
     }
 
