@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class VersioncompareApplicationTests {
     private static final Logger logger = LoggerFactory.getLogger(VersioncompareApplicationTests.class);
 
-    @Value("#{'${webapp.dir.path.list}'.split(',')}")
+    @Value("#{'${webapp.dir.path.list.test}'.split(',')}")
     private List<String> webappDirs;
 
 	@Test

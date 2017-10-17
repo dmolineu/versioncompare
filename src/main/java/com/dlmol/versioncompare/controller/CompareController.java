@@ -47,6 +47,7 @@ public class CompareController {
     //TODO: Serve jsp
     //TODO: Color-code output, black all the same, red for outlier
     @RequestMapping(value="/compare/{propKey}", method = RequestMethod.GET)
+    @ResponseBody
     public String compare(@PathVariable String propKey) {
         CompareConfiguration config = null;
         try {
@@ -57,8 +58,6 @@ public class CompareController {
             logger.error(msg, e);
             return msg;
         }
-        final String keySetJoined =
-                "\"" + String.join("\", \"", config.getAvailableCompareSets(env.getAllProperties())) + "\"";
         if (propKey == null || propKey.length() == 0) {
             final String msg = "'propKey' parameter is missing! Configured keys are: \n" +
                     getKeyLinks(config.getAvailableCompareSets(env.getAllProperties()));
@@ -93,5 +92,11 @@ public class CompareController {
         }
         list.append("</ul>\n");
         return list.toString();
+    }
+
+    @RequestMapping("/jsp")
+    public String jsp(Model model) {
+        model.addAttribute("russian", "Добрый день");
+        return "compare";
     }
 }

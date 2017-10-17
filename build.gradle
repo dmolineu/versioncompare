@@ -25,11 +25,18 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-jersey')
     compile('org.springframework.boot:spring-boot-starter-web')
-//	compile('javax.servlet')
+	runtime('org.springframework.boot:spring-boot-devtools')
+
+	//for executable jar with jsp
+	compile("javax.servlet:jstl")
+	compile("org.apache.tomcat.embed:tomcat-embed-jasper")
+
+	//Additional third-party libs
     compile('commons-io:commons-io:2.5')
-    compile('org.webjars:jquery:2.2.4')
-    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
 	compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
+    compile('org.webjars:jquery:2.2.4')
+
+	compileOnly('org.projectlombok:lombok')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')

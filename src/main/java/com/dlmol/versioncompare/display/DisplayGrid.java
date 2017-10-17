@@ -2,6 +2,8 @@ package com.dlmol.versioncompare.display;
 
 import com.dlmol.versioncompare.model.Cell;
 import com.dlmol.versioncompare.model.WebApp;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 public class DisplayGrid {
     private static final Logger logger = LoggerFactory.getLogger(DisplayGrid.class);
 
+    @Getter(AccessLevel.PUBLIC)
     private Cell[][] grid;
     private List<String> masterAppList = null;
 
@@ -20,6 +23,13 @@ public class DisplayGrid {
         logger.debug("Master App List:");
         masterAppList.forEach(app -> logger.debug("\t" + app));
         buildGrid(webappDirsContents, webappDirNames);
+    }
+
+    private static List<String> getMasterAppList(Map<String, List<WebApp>> webappDirsContents) {
+        Set<String> allApps = new HashSet<>();
+        webappDirsContents.values().forEach(appsInWebAppDir ->
+                appsInWebAppDir.forEach(app -> allApps.add(app.getName())));
+        return allApps.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     private void buildGrid(Map<String, List<WebApp>> webappDirsContents, List<String> webappDirNames) {
@@ -59,13 +69,49 @@ public class DisplayGrid {
                     }
                 }
             }
+            //Set comparison attributes for formatting:
+            if (row > 0) {
+                logger.debug("comparing row: " + row);
+                //Compare cells in row
+                List<Cell> rowCells = new ArrayList<>(grid[row].length - 1);
+                for (int col=1; col<grid[row].length; col++) //Skip row # count column (0)
+                    rowCells.add(grid[row][col]);
+                if (rowCells.stream().map(c -> c.getAltText()).distinct().count() == 1) //All cells have the same AltText
+                    for (int col = 1; col < grid[row].length; col++) {
+                        grid[row][col].setAnomoly(false);
+                        grid[row][col].setConsistentVersion(true);
+                    }
+                else
+                    for (int col = 1; col < grid[row].length; col++) {
+                        grid[row][col].setConsistentVersion(false);
+                        final Cell cell = grid[row][col];
+                        if (cell == null || cell.getAltText() == null)
+                            continue;
+                        grid[row][col].setAnomoly(isAnomoly(appDirList.size(), rowCells, cell));
+                    }
+            }
         }
         printGrid();
     }
 
+    /**
+     * @param comparisonListSize
+     * @param rowCells
+     * @param cell
+     * @return True when the cell's version/alt text value appears in more than half of the cells compared.
+     */
+    private boolean isAnomoly(final int comparisonListSize, final List<Cell> rowCells, final Cell cell) {
+        final long countOfRowCellsWithSameAltText = rowCells.stream()
+                .filter(c -> cell.getAltText().equals(c.getAltText())) //Get list where
+                .count();
+        final int thresholdForAnomoly = comparisonListSize / 2;
+        final boolean isAnomoly = thresholdForAnomoly >= countOfRowCellsWithSameAltText;
+        return isAnomoly;
+    }
+
     public String getGridHtmlTable() {
         printGrid();
-        logger.debug("getGridHtmlTable():\n"); //TODO: Setup LOGGER.
+        logger.debug("getGridHtmlTable():\n");
         StringBuilder sb = new StringBuilder("\n<table border=1 cellpadding=3\">\n");
         for (int row = 0; row < grid.length; row++) { //iterate row
             sb.append("\t<tr>\n");
@@ -73,9 +119,16 @@ public class DisplayGrid {
                 System.out.print(grid[row][column] == null ? "\"\"" : grid[row][column].getDisplayText() + "\t");
                 if (row == 0)
                     sb.append("\t\t<th>" + getDisplayableValue(grid[row][column]) + "</th>\n");
-                else
-                    sb.append("\t\t<td><div title=\"" + (getHoverValue(grid[row][column])) + "\">" +
-                            (getDisplayableValue(grid[row][column])) + "</div></td>\n");
+                else {
+                    if (grid[row][column].isAnomoly())
+                        sb.append("\t\t<td><div style=\"color:red;\" title=\"");
+                    else if (grid[row][column].isConsistentVersion())
+                        sb.append("\t\t<td><div style=\"color:green;\" title=\"");
+                    else
+                        sb.append("\t\t<td><div title=\"");
+                    sb.append(getHoverValue(grid[row][column])).append("\">")
+                            .append(getDisplayableValue(grid[row][column])).append("</div></td>\n");
+                }
             }
             System.out.print("\n");
             sb.append("\t</tr>\n");
@@ -107,13 +160,6 @@ public class DisplayGrid {
         }
         sb.append("\n");
         logger.debug("printGrid():\n" + sb.toString());
-    }
-
-    private static List<String> getMasterAppList(Map<String, List<WebApp>> webappDirsContents) {
-        Set<String> allApps = new HashSet<>();
-        webappDirsContents.values().forEach(appsInWebAppDir ->
-                appsInWebAppDir.forEach(app -> allApps.add(app.getName())));
-        return allApps.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     private int getTotalRowCount(Map<String, List<WebApp>> webappDirsContents) {
